@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Routine {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  name        String   @db.VarChar(100)
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  exercises RoutineExercise[]
+
+  @@map("routines")
+}
+
+model RoutineExercise {
+  id              Int     @id @default(autoincrement())
+  routineId       Int     @map("routine_id")
+  exerciseId      Int     @map("exercise_id")
+  sets            Int
+  repRangeMin     Int?    @map("rep_range_min")
+  repRangeMax     Int?    @map("rep_range_max")
+  technique       String  @default("normal") @db.VarChar(50)
+  restTime        Int?    @map("rest_time")
+  orderInRoutine  Int     @map("order_in_routine")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  routine Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+
+  @@map("routine_exercises")
+}

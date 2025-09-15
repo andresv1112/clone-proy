@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workout {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  routineId   Int       @map("routine_id")
+  routineName String    @map("routine_name") @db.VarChar(100)
+  startedAt   DateTime  @map("started_at")
+  completedAt DateTime? @map("completed_at")
+  duration    Int?      // duration in seconds
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  sets WorkoutSet[]
+
+  @@map("workouts")
+}
+
+model WorkoutSet {
+  id           Int      @id @default(autoincrement())
+  workoutId    Int      @map("workout_id")
+  exerciseId   Int      @map("exercise_id")
+  exerciseName String   @map("exercise_name") @db.VarChar(100)
+  setNumber    Int      @map("set_number")
+  weight       Decimal? @db.Decimal(5, 2)
+  reps         Int
+  technique    String   @default("normal") @db.VarChar(50)
+  restTime     Int?     @map("rest_time")
+  completedAt  DateTime @default(now()) @map("completed_at")
+
+  workout Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  @@map("workout_sets")
+}

@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Exercise {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?
+  videoPath   String?  @map("video_path") @db.VarChar(255)
+  createdBy   Int      @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  aliases ExerciseAlias[]
+
+  @@map("exercises")
+}
+
+model ExerciseAlias {
+  id         Int      @id @default(autoincrement())
+  exerciseId Int      @map("exercise_id")
+  alias      String   @db.VarChar(100)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@map("exercise_aliases")
+}
