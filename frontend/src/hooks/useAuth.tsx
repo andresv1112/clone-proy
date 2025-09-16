@@ -39,17 +39,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const login = async (username: string, password: string) => {
-    const response = await authService.login({ username, password })
-    authService.saveToken(response.token)
-    authService.saveUser(response.user)
-    setUser(response.user)
+    const { token, user: authenticatedUser } = await authService.login({ username, password })
+    authService.saveToken(token)
+    authService.saveUser(authenticatedUser)
+    setUser(authenticatedUser)
   }
 
   const register = async (username: string, password: string) => {
-    const response = await authService.register({ username, password })
-    authService.saveToken(response.token)
-    authService.saveUser(response.user)
-    setUser(response.user)
+    const { token, user: registeredUser } = await authService.register({ username, password })
+    authService.saveToken(token)
+    authService.saveUser(registeredUser)
+    setUser(registeredUser)
   }
 
   const logout = () => {
